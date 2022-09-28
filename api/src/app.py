@@ -141,15 +141,14 @@ def predict_preferences():
             movieids=left, api=moviesubset)
         rightitems = movie_db.get_movie_from_list(
             movieids=right, api=moviesubset)
-        print(len(left), len(leftitems))
-        print(len(right), len(rightitems))
 
         if condition.id - 1 == 0:
             prediction = {
                 'combined' : {
                     'tag': 'modified_control',
                     'label': 'Movies You May Like',
-                    'byline': 'Here\'s your combined predictions.',
+                    'byline': 'Here\'s your combined predictions. You are welcome to filter the \
+                        movies according to their genre.',
                     'items': leftitems + rightitems
                 }
             }

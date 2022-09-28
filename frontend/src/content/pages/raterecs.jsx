@@ -318,7 +318,7 @@ class RecommendationPage extends Component {
                     </p>
                 </div>
 
-                <div className="row g-0">
+                <div className="row g-0 justify-content-center">
                     {/* <MovieSidePanel id="leftPanel"
                         movieList={leftItems}
                         hoverHandler={this.handleHover}
