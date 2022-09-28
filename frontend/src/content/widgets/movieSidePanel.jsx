@@ -7,8 +7,10 @@ class MovieSidePanel extends Component {
 		super(props);
 
 		this.state = {
+			allRecomm: [],
 			genres: [],
-			filtered: []
+			selGenre: 'all',
+			filtered: [],
 		}
 	}
 
@@ -26,9 +28,32 @@ class MovieSidePanel extends Component {
 				}
 			});
 			this.setState({
+				allRecomm: JSON.parse(JSON.stringify(this.props.movieList)),
 				genres: newGenres,
 				filtered: JSON.parse(JSON.stringify(this.props.movieList))
 			});
+		}
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		if (prevProps.ratingHistory.length !== this.props.ratingHistory.length) {
+			if (this.state.selGenre === 'all') {
+				this.setState({
+					allRecomm: JSON.parse(JSON.stringify(this.props.movieList)),
+					filtered: JSON.parse(JSON.stringify(this.props.movieList))
+				});
+			} else {
+				let newFiltered = [];
+				this.props.movieList.forEach(item => {
+					if (this.state.selGenre === this.getPrimaryGenre(item.genre)) {
+						newFiltered.push(item);
+					}
+				});
+				this.setState({
+					allRecomm: JSON.parse(JSON.stringify(this.props.movieList)),
+					filtered: newFiltered
+				});
+			}
 		}
 	}
 
@@ -49,20 +74,22 @@ class MovieSidePanel extends Component {
 	}
 
 	onChangeGenre = (event) => {
-		const selGenre = event.target.value;
-		if (selGenre === "all") {
+		const newGenre = event.target.value;
+		if (newGenre === "all") {
 			this.setState({
-				filtered: JSON.parse(JSON.stringify(this.props.movieList))
+				filtered: JSON.parse(JSON.stringify(this.props.movieList)),
+				selGenre: 'all'
 			});
 		} else {
 			let newFiltered = [];
 			this.props.movieList.forEach(item => {
-				if (selGenre === this.getPrimaryGenre(item.genre)) {
+				if (newGenre === this.getPrimaryGenre(item.genre)) {
 					newFiltered.push(item);
 				}
 			});
 			this.setState({
-				filtered: newFiltered
+				filtered: newFiltered,
+				selGenre: newGenre
 			});
 		}
 	};
@@ -84,7 +111,7 @@ class MovieSidePanel extends Component {
 							</p>
 						: ''
 					}
-					<select className="form-select" defaultValue="all" onChange={this.onChangeGenre}>
+					<select className="form-select" value={this.state.selGenre} onChange={this.onChangeGenre}>
 						<option key="all" value="all">All Genres</option>
 						{this.state.genres.map(g => (
 							<option key={g} value={g}>{g}</option>

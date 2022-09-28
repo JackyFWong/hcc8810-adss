@@ -335,6 +335,7 @@ class RecommendationPage extends Component {
                         render={(props) => <SidePanelItemRate {...props} />}
                         hoverHandler={this.handleHover}
                         ratingHandler={this.handleRating}
+                        ratingHistory={this.state.ratingHistory}
                     />
                     <div className="col-sm-4 gx-sm-4" id="moviePosterPreview">
                         {this.state.setIsShown && (this.state.activeMovie != null) ? (
@@ -351,6 +352,7 @@ class RecommendationPage extends Component {
                                     </Card.Title>
                                     <Container className="overflow-auto" style={{ height: "30%" }}>
                                         <Card.Text>
+                                            <h6>{this.state.activeMovie.genre.split('|')[0]}</h6>
                                             {this.state.activeMovie.description}
                                         </Card.Text>
                                     </Container>
