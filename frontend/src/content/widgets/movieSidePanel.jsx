@@ -24,7 +24,8 @@ class MovieSidePanel extends Component {
 	componentDidMount() {
 		if (this.props.movieList.length !== 0) {
 			let newGenres = [];
-			this.props.movieList.forEach(item => {
+			const movies = JSON.parse(JSON.stringify(this.props.movieList));
+			movies.forEach(item => {
 				const currGenre = this.getPrimaryGenre(item.genre);
 				if (!newGenres.includes(currGenre)) {
 					newGenres.push(this.getPrimaryGenre(item.genre));
@@ -32,7 +33,6 @@ class MovieSidePanel extends Component {
 			});
 
 			let paged;
-			const movies = JSON.parse(JSON.stringify(this.props.movieList));
 			if (movies.length > PAGE_LENGTH) {
 				paged = movies.slice(0, PAGE_LENGTH);
 			} else {
@@ -40,7 +40,7 @@ class MovieSidePanel extends Component {
 			}
 			this.setState({
 				allRecomm: movies,
-				genres: newGenres,
+				genres: newGenres.sort(),
 				filtered: paged,
 				maxPages: Math.ceil(movies.length / PAGE_LENGTH)
 			});
@@ -57,7 +57,7 @@ class MovieSidePanel extends Component {
 				});
 			} else {
 				let newFiltered = [];
-				this.props.movieList.forEach(item => {
+				movies.forEach(item => {
 					if (this.state.selGenre === this.getPrimaryGenre(item.genre)) {
 						newFiltered.push(item);
 					}
@@ -75,7 +75,7 @@ class MovieSidePanel extends Component {
 				});
 			} else {
 				let newFiltered = [];
-				this.props.movieList.forEach(item => {
+				this.state.allRecomm.forEach(item => {
 					if (this.state.selGenre === this.getPrimaryGenre(item.genre)) {
 						newFiltered.push(item);
 					}
@@ -106,7 +106,7 @@ class MovieSidePanel extends Component {
 	onChangeGenre = (event) => {
 		const newGenre = event.target.value;
 		if (newGenre === "all") {
-			const movies = JSON.parse(JSON.stringify(this.props.movieList));
+			const movies = this.state.allRecomm;
 			this.setState({
 				filtered: movies.slice(0, PAGE_LENGTH),
 				selGenre: 'all',
@@ -115,7 +115,7 @@ class MovieSidePanel extends Component {
 			});
 		} else {
 			let newFiltered = [];
-			this.props.movieList.forEach(item => {
+			this.state.allRecomm.forEach(item => {
 				if (newGenre === this.getPrimaryGenre(item.genre)) {
 					newFiltered.push(item);
 				}
