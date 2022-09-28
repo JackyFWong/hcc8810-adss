@@ -148,7 +148,7 @@ def predict_preferences():
                     'tag': 'modified_control',
                     'label': 'Movies You May Like',
                     'byline': 'Here\'s your combined predictions. You are welcome to filter the \
-                        movies according to their genre.',
+                        movies according to their primary genre.',
                     'items': leftitems + rightitems
                 }
             }

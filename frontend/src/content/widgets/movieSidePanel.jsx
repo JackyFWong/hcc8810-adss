@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { ListGroup } from "react-bootstrap";
 
+const PAGE_LENGTH = 5;
 class MovieSidePanel extends Component {
 
 	constructor(props) {
@@ -11,6 +12,8 @@ class MovieSidePanel extends Component {
 			genres: [],
 			selGenre: 'all',
 			filtered: [],
+			page: 0,
+			maxPages: 0,
 		}
 	}
 
@@ -27,20 +30,30 @@ class MovieSidePanel extends Component {
 					newGenres.push(this.getPrimaryGenre(item.genre));
 				}
 			});
+
+			let paged;
+			const movies = JSON.parse(JSON.stringify(this.props.movieList));
+			if (movies.length > PAGE_LENGTH) {
+				paged = movies.slice(0, PAGE_LENGTH);
+			} else {
+				paged = movies;
+			}
 			this.setState({
-				allRecomm: JSON.parse(JSON.stringify(this.props.movieList)),
+				allRecomm: movies,
 				genres: newGenres,
-				filtered: JSON.parse(JSON.stringify(this.props.movieList))
+				filtered: paged,
+				maxPages: Math.ceil(movies.length / PAGE_LENGTH)
 			});
 		}
 	}
 
 	componentDidUpdate(prevProps, prevState) {
 		if (prevProps.ratingHistory.length !== this.props.ratingHistory.length) {
+			const movies = JSON.parse(JSON.stringify(this.props.movieList));
 			if (this.state.selGenre === 'all') {
 				this.setState({
-					allRecomm: JSON.parse(JSON.stringify(this.props.movieList)),
-					filtered: JSON.parse(JSON.stringify(this.props.movieList))
+					allRecomm: movies,
+					filtered: movies.slice(this.state.page * PAGE_LENGTH, (this.state.page + 1) * PAGE_LENGTH)
 				});
 			} else {
 				let newFiltered = [];
@@ -50,8 +63,25 @@ class MovieSidePanel extends Component {
 					}
 				});
 				this.setState({
-					allRecomm: JSON.parse(JSON.stringify(this.props.movieList)),
-					filtered: newFiltered
+					allRecomm: movies,
+					filtered: newFiltered.slice(this.state.page * PAGE_LENGTH, (this.state.page + 1) * PAGE_LENGTH)
+				});
+			}
+		}
+		if (prevState.page !== this.state.page) {
+			if (this.state.selGenre === 'all') {
+				this.setState({
+					filtered: this.state.allRecomm.slice(this.state.page * PAGE_LENGTH, (this.state.page + 1) * PAGE_LENGTH)
+				});
+			} else {
+				let newFiltered = [];
+				this.props.movieList.forEach(item => {
+					if (this.state.selGenre === this.getPrimaryGenre(item.genre)) {
+						newFiltered.push(item);
+					}
+				});
+				this.setState({
+					filtered: newFiltered.slice(this.state.page * PAGE_LENGTH, (this.state.page + 1) * PAGE_LENGTH)
 				});
 			}
 		}
@@ -76,9 +106,12 @@ class MovieSidePanel extends Component {
 	onChangeGenre = (event) => {
 		const newGenre = event.target.value;
 		if (newGenre === "all") {
+			const movies = JSON.parse(JSON.stringify(this.props.movieList));
 			this.setState({
-				filtered: JSON.parse(JSON.stringify(this.props.movieList)),
-				selGenre: 'all'
+				filtered: movies.slice(0, PAGE_LENGTH),
+				selGenre: 'all',
+				page: 0,
+				maxPages: Math.ceil(movies.length / PAGE_LENGTH)
 			});
 		} else {
 			let newFiltered = [];
@@ -88,10 +121,22 @@ class MovieSidePanel extends Component {
 				}
 			});
 			this.setState({
-				filtered: newFiltered,
-				selGenre: newGenre
+				filtered: newFiltered.slice(0, PAGE_LENGTH),
+				selGenre: newGenre,
+				page: 0,
+				maxPages: Math.ceil(newFiltered.length / PAGE_LENGTH)
 			});
 		}
+	};
+
+	onPrev = (event) => {
+		const newPage = this.state.page - 1;
+		this.setState({page: newPage});
+	};
+
+	onNext = (event) => {
+		const newPage = this.state.page + 1;
+		this.setState({page: newPage});
 	};
 
 	render() {
@@ -136,6 +181,23 @@ class MovieSidePanel extends Component {
 						// 	selectStateHandler={this.onValueChange} />
 					))}
 				</ListGroup>
+				<div className="d-flex justify-content-evenly align-items-center pt-2">
+					<button
+						type="button"
+						className="btn btn-primary"
+						onClick={this.onPrev}
+						disabled={this.state.page <= 0}>
+							Previous
+					</button>
+					{this.state.page + 1} / {this.state.maxPages}
+					<button
+						type="button"
+						className="btn btn-primary"
+						onClick={this.onNext}
+						disabled={this.state.page + 1 >= this.state.maxPages}>
+							Next
+					</button>
+				</div>
 			</div>
 		);
 	}

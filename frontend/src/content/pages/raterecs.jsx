@@ -80,7 +80,7 @@ class RecommendationPage extends Component {
         axios.post(API + 'recommendations', {
             userid: userid,
             ratings: ratings,
-            count: 7
+            count: 12        // api returns double this, sort of
         },
             {
                 headers: {
@@ -352,7 +352,8 @@ class RecommendationPage extends Component {
                                     </Card.Title>
                                     <Container className="overflow-auto" style={{ height: "30%" }}>
                                         <Card.Text>
-                                            <h6>{this.state.activeMovie.genre.split('|')[0]}</h6>
+                                            <span className="fw-bold">{this.state.activeMovie.genre.split('|')[0]}</span>
+                                            <br />
                                             {this.state.activeMovie.description}
                                         </Card.Text>
                                     </Container>
