@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { Component } from 'react';
 import { Button, Card, Container, Spinner } from "react-bootstrap";
-import { Navigate, Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { API } from "../utils/constants";
 import LoadingAnimation from '../widgets/loadingView';
 import MovieSidePanel from "../widgets/movieSidePanel";
@@ -90,7 +90,6 @@ class RecommendationPage extends Component {
             })
             .then(response => {
                 if (response.status === 200) {
-                    console.log(response.data)
                     const combinedResp = JSON.parse(JSON.stringify(response.data['recommendations']['combined']))
                     this.setState({
                         panel: {
@@ -252,7 +251,6 @@ class RecommendationPage extends Component {
     };
 
     render() {
-        let pick = this.state.pick;
         let selectedid = this.state.selectedid;
 
         let userid = this.state.userid;
