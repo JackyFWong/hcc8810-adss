@@ -111,3 +111,13 @@ dist
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Python venv and data stuff
+api/env/
+api/src/__pycache__/
+api/src/algs/data/
+api/src/algs/model/
+api/src/algs/__pycache__/
+api/src/compute/__pycache__/
+api/src/db_connectors/
+api/src/utils/__pycache__/

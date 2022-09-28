@@ -18,8 +18,7 @@ class RecommendationPage extends Component {
 
         this.state = {
             ready: false,
-            leftPanel: { items: [], condition: '', byline: '', tag: '', vstd: [] },
-            rightPanel: { items: [], condition: '', byline: '', tag: '', vstd: [] },
+            panel: { items: [], condition: '', byline: '', tag: '', vstd: [] },
             visited: [],
             ratingHistory: [],
             setIsShown: false,
@@ -41,14 +40,9 @@ class RecommendationPage extends Component {
                     intro: this.props.headerSubtitle
                 },
                 {
-                    element: "#leftPanel",
+                    element: "#panel",
                     intro: "These are your movie recommendations.",
                     position: "right"
-                },
-                {
-                    element: "#rightPanel",
-                    intro: "This list contains movies based on a different criterion.",
-                    position: "left"
                 },
                 {
                     element: "#moviePosterPreview",
@@ -96,19 +90,14 @@ class RecommendationPage extends Component {
             })
             .then(response => {
                 if (response.status === 200) {
+                    console.log(response.data)
+                    const combinedResp = JSON.parse(JSON.stringify(response.data['recommendations']['combined']))
                     this.setState({
-                        leftPanel: {
-                            tag: response.data['recommendations']['left']['tag'],
-                            condition: response.data['recommendations']['left']['label'],
-                            byline: response.data['recommendations']['left']['byline'],
-                            items: response.data['recommendations']['left']['items'],
-                            vstd: []
-                        },
-                        rightPanel: {
-                            tag: response.data['recommendations']['right']['tag'],
-                            condition: response.data['recommendations']['right']['label'],
-                            byline: response.data['recommendations']['left']['byline'],
-                            items: response.data['recommendations']['right']['items'],
+                        panel: {
+                            tag: combinedResp['tag'],
+                            condition: combinedResp['label'],
+                            byline: combinedResp['byline'],
+                            items: combinedResp['items'],
                             vstd: []
                         }
                     });
@@ -269,22 +258,17 @@ class RecommendationPage extends Component {
         let userid = this.state.userid;
         let pageid = this.state.pageid;
 
-        let leftItems = this.state.leftPanel.items;
-        let leftCondition = this.state.leftPanel.condition;
-        let leftbyline = this.state.leftPanel.byline;
-        let leftvstd = this.state.leftPanel.vstd;
-
-        let rightItems = this.state.rightPanel.items;
-        let rightCondition = this.state.rightPanel.condition;
-        let rightbyline = this.state.rightPanel.byline;
-        let rightvstd = this.state.rightPanel.vstd;
+        let items = this.state.panel.items;
+        let condition = this.state.panel.condition;
+        let byline = this.state.panel.byline;
+        let vstd = this.state.panel.vstd;
 
         const dest = this.props.dest;
 
         if (this.state.updateSuccess) {
 
             let ratings = this.state.visited.concat(this.state.ratings);
-            let selectedmovie = [...leftItems, ...rightItems].find((movie) => (
+            let selectedmovie = items.find((movie) => (
                 movie.movie_id === selectedid
             ));
             return (
@@ -292,7 +276,7 @@ class RecommendationPage extends Component {
                     {
                         userid: userid,
                         ratings: ratings,
-                        recs: leftItems,
+                        recs: items,
                         pageid: pageid,
                         selectedmovie: selectedmovie
                     }
@@ -301,8 +285,8 @@ class RecommendationPage extends Component {
             );
         }
 
-        let buttonDisabled = ((leftItems.length + rightItems.length) !==
-            leftvstd.length + rightvstd.length) && selectedid === undefined;
+        let buttonDisabled = ((items.length) !==
+            vstd.length) && selectedid === undefined;
 
         let buttonVariant = buttonDisabled ? 'secondary' : 'primary';
 
@@ -345,9 +329,9 @@ class RecommendationPage extends Component {
                         selectedid={selectedid}
                         panelByline={leftbyline}
                     /> */}
-                    <MovieSidePanel id="leftPanel" movieList={leftItems}
-                        panelTitle={leftCondition}
-                        panelByline={leftbyline}
+                    <MovieSidePanel id="panel" movieList={items}
+                        panelTitle={condition}
+                        panelByline={byline}
                         render={(props) => <SidePanelItemRate {...props} />}
                         hoverHandler={this.handleHover}
                         ratingHandler={this.handleRating}
@@ -385,13 +369,13 @@ class RecommendationPage extends Component {
                         selectedid={selectedid}
                         panelByline={rightbyline}
                     /> */}
-                    <MovieSidePanel id="rightPanel" movieList={rightItems}
+                    {/* <MovieSidePanel id="rightPanel" movieList={rightItems}
                         panelTitle={rightCondition}
                         panelByline={rightbyline}
                         render={(props) => <SidePanelItemRate {...props} />}
                         hoverHandler={this.handleHover}
                         ratingHandler={this.handleRating}
-                    />
+                    /> */}
                 </div>
                 <div className="jumbotron jumbotron-footer">
                     <Button className="next-button footer-btn" variant={buttonVariant} size="lg"

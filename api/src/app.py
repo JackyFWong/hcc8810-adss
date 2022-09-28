@@ -141,24 +141,36 @@ def predict_preferences():
             movieids=left, api=moviesubset)
         rightitems = movie_db.get_movie_from_list(
             movieids=right, api=moviesubset)
+        print(len(left), len(leftitems))
+        print(len(right), len(rightitems))
 
-        prediction = {
-            # topN
-            'left': {
-                'tag': 'control',
-                'label': 'Movies You May Like',
-                'byline': 'Among the movies in your system, we predict that \
-                    you will like these 7 movies the best.',
-                'items': leftitems
-            },
-            # Condition specific messaging
-            'right': {
-                'tag': condition.cond_tag,
-                'label': condition.cond_act,
-                'byline': condition.cond_exp,
-                'items': rightitems
+        if condition.id - 1 == 0:
+            prediction = {
+                'combined' : {
+                    'tag': 'modified_control',
+                    'label': 'Movies You May Like',
+                    'byline': 'Here\'s your combined predictions.',
+                    'items': leftitems + rightitems
+                }
             }
-        }
+        else:
+            prediction = {
+                # topN
+                'left': {
+                    'tag': 'control',
+                    'label': 'Movies You May Like',
+                    'byline': 'Among the movies in your system, we predict that \
+                        you will like these 7 movies the best.',
+                    'items': leftitems
+                },
+                # Condition specific messaging
+                'right': {
+                    'tag': condition.cond_tag,
+                    'label': condition.cond_act,
+                    'byline': condition.cond_exp,
+                    'items': rightitems
+                }
+            }
     except KeyError:
         abort(400)
 
